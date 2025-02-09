@@ -1,0 +1,32 @@
+name: Daily Commit Automation
+
+on:
+  schedule:
+    # Runs at 13:45 UTC daily (which is 19:15 IST)
+    - cron: "45 13 * * *"
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Email Verification - 23f3000121@ds.study.iitm.ac.in
+        run: echo "Automated commit by GitHub Actions"
+
+      - name: Create Dummy Update
+        run: |
+          echo "Last run: $(date -u)" > last-run.txt
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add last-run.txt
+          git commit -m "Automated daily update [skip ci]" || exit 0
+          git push
